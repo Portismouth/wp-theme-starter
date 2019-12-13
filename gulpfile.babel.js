@@ -13,6 +13,8 @@ import browserSync from 'browser-sync';
 import zip from 'gulp-zip';
 import replace from 'gulp-replace';
 import info from './package.json'
+import postcss from 'gulp-postcss';
+import autoprefixer from 'autoprefixer';
 
 const server = browserSync.create();
 const PRODUCTION = yargs.argv.prod;
@@ -22,7 +24,6 @@ const paths = {
   styles: {
     src: [
       'src/assets/sass/bundle.scss',
-      // 'src/assets/sass/block-editor.scss'
     ],
     dest: 'dist/assets/css'
   },
@@ -41,7 +42,6 @@ const paths = {
   scripts: {
     src: [
       'src/assets/js/bundle.js',
-      // 'src/assets/js/gutenberg.js'
     ],
     dest: 'dist/assets/js'
   },
@@ -82,6 +82,7 @@ export const styles = () => {
     .pipe(gulpIf(!PRODUCTION, sourcemaps.init()))
     .pipe(sass().on('error', sass.logError))
     .pipe(gulpIf(PRODUCTION, cleanCSS({ compatibility: 'ie8' })))
+    .pipe(gulpIf(PRODUCTION, postcss([ autoprefixer() ])))
     .pipe(gulpIf(!PRODUCTION, sourcemaps.write()))
     .pipe(gulp.dest(paths.styles.dest))
     .pipe(server.stream());
